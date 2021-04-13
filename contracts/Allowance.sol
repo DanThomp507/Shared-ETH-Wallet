@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 pragma solidity >=0.7.4;
 
 contract Allowance is Ownable {
+    using SafeMath for uint256;
+
     event AllowanceChanged(
         address indexed _forWho,
         address indexed _byWhom,
@@ -38,8 +41,8 @@ contract Allowance is Ownable {
             _who,
             msg.sender,
             allowance[_who],
-            allowance[_who] - _amount
+            allowance[_who].sub(_amount)
         );
-        allowance[_who] -= _amount;
+        allowance[_who] = allowance[_who].sub(_amount);
     }
 }
