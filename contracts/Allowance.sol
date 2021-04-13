@@ -5,13 +5,20 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 pragma solidity >=0.7.4;
 
 contract Allowance is Ownable {
+    event AllowanceChanged(
+        address indexed _forWho,
+        address indexed _byWhom,
+        uint256 _oldAmount,
+        uint256 _newAmount
+    );
+    mapping(address => uint256) public allowance;
+
     function isOwner() internal view returns (bool) {
         return owner() == msg.sender;
     }
 
-    mapping(address => uint256) public allowance;
-
     function setAllowance(address _who, uint256 _amount) public onlyOwner {
+        emit AllowanceChanged(_who, msg.sender, allowance[_who], _amount);
         allowance[_who] = _amount;
     }
 
@@ -27,6 +34,12 @@ contract Allowance is Ownable {
         internal
         ownerOrAllowed(_amount)
     {
+        emit AllowanceChanged(
+            _who,
+            msg.sender,
+            allowance[_who],
+            allowance[_who] - _amount
+        );
         allowance[_who] -= _amount;
     }
 }
